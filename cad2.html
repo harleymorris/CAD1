@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Emergency CAD System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #555;
+        }
+
+        nav button {
+            background-color: #777;
+            color: white;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            margin: 0.2rem;
+        }
+
+        nav button:hover {
+            background-color: #999;
+        }
+
+        section {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .incident {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #eaeaea;
+            text-align: left;
+        }
+
+        .incident h4 {
+            margin: 0;
+        }
+
+        .incident p {
+            margin: 5px 0;
+        }
+
+        .incident .details {
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        #incidentForm input, #incidentForm textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #incidentForm button {
+            padding: 10px 15px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        // Function to navigate between dashboards
+        function navigate(section) {
+            const content = document.getElementById('content');
+            if (section === 'police') {
+                content.innerHTML = `
+                    <h2>Police Dashboard</h2>
+                    <p>View active police incidents and create new ones.</p>
+                    <button onclick="showIncidentForm('police')">Create Police Incident</button>
+                    <div id="policeIncidents"></div>
+                `;
+            } else if (section === 'fire') {
+                content.innerHTML = `
+                    <h2>Fire Dashboard</h2>
+                    <p>View detailed fire incidents or create a new one.</p>
+                    <button onclick="showIncidentForm('fire')">Create Fire Incident</button>
+                    <div id="fireIncidents"></div>
+                `;
+                loadFireIncidents();
+            } else if (section === 'ambulance') {
+                content.innerHTML = `
+                    <h2>Ambulance Dashboard</h2>
+                    <p>View detailed ambulance incidents or create a new one.</p>
+                    <button onclick="showIncidentForm('ambulance')">Create Ambulance Incident</button>
+                    <div id="ambulanceIncidents"></div>
+                `;
+                loadAmbulanceIncidents();
+            } else if (section === 'admin') {
+                content.innerHTML = `
+                    <h2>Admin Settings</h2>
+                    <p>Customize department codes and settings.</p>
+                    <button onclick="alert('Feature Coming Soon!')">Manage Departments</button>
+                `;
+            }
+        }
+
+        // Show incident form for creating a new incident (for police, fire, or ambulance)
+        function showIncidentForm(type) {
+            const content = document.getElementById('content');
+            content.innerHTML += `
+                <div id="incidentForm">
+                    <h3>Create New Incident</h3>
+                    <input type="text" id="incidentTitle" placeholder="Incident Title" />
+                    <input type="text" id="incidentLocation" placeholder="Incident Location" />
+                    <input type="datetime-local" id="incidentTime" />
+                    <textarea id="incidentDetails" placeholder="Incident Details"></textarea>
+                    <button onclick="createIncident('${type}')">Submit Incident</button>
+                </div>
+            `;
+        }
+
+        // Create a new incident (for police, fire, or ambulance)
+        function createIncident(type) {
+            const title = document.getElementById('incidentTitle').value;
+            const location = document.getElementById('incidentLocation').value;
+            const time = document.getElementById('incidentTime').value;
+            const details = document.getElementById('incidentDetails').value;
+
+            if (title && location && time && details) {
+                const incidentDiv = document.createElement('div');
+                incidentDiv.classList.add('incident');
+                incidentDiv.innerHTML = `
+                    <h4>${title}</h4>
+                    <p><strong>Location:</strong> ${location}</p>
+                    <p><strong>Time:</strong> ${new Date(time).toLocaleString()}</p>
+                    <p><strong>Details:</strong> ${details}</p>
+                `;
+                document.getElementById(`${type}Incidents`).appendChild(incidentDiv);
+                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} Incident Created`);
+                document.getElementById('incidentForm').remove(); // Remove the form after submission
+            } else {
+                alert('Please fill out all fields.');
+            }
+        }
+
+        // Load sample fire incidents (structured format)
+        function loadFireIncidents() {
+            const fireIncidentsDiv = document.getElementById('fireIncidents');
+            const fireIncidents = [
+                {
+                    title: 'Fire in City Center',
+                    location: 'Main Square, City Center',
+                    time: '2024-12-01 14:30',
+                    details: 'Electrical short circuit caused fire in a shopping mall.'
+                },
+                {
+                    title: 'House Fire',
+                    location: 'West End, 45 Oak Street',
+                    time: '2024-12-02 06:15',
+                    details: 'Kitchen stove accident led to a house fire.'
+                }
+            ];
+
+            fireIncidents.forEach(incident => {
+                const incidentDiv = document.createElement('div');
+                incidentDiv.classList.add('incident');
+                incidentDiv.innerHTML = `
+                    <h4>${incident.title}</h4>
+                    <p><strong>Location:</strong> ${incident.location}</p>
+                    <p><strong>Time:</strong> ${incident.time}</p>
+                    <p><strong>Details:</strong> ${incident.details}</p>
+                `;
+                fireIncidentsDiv.appendChild(incidentDiv);
+            });
+        }
+
+        // Load sample ambulance incidents (structured format)
+        function loadAmbulanceIncidents() {
+            const ambulanceIncidentsDiv = document.getElementById('ambulanceIncidents');
+            const ambulanceIncidents = [
+                {
+                    title: 'Car Accident on Highway 5',
+                    location: 'Highway 5, 10 km from City Center',
+                    time: '2024-12-03 08:45',
+                    details: 'Driver lost control, 2 people hospitalized.'
+                },
+                {
+                    title: 'Heart Attack at 45 Main Street',
+                    location: '45 Main Street, City Center',
+                    time: '2024-12-04 11:00',
+                    details: 'Victim revived after emergency response.'
+                }
+            ];
+
+            ambulanceIncidents.forEach(incident => {
+                const incidentDiv = document.createElement('div');
+                incidentDiv.classList.add('incident');
+                incidentDiv.innerHTML = `
+                    <h4>${incident.title}</h4>
+                    <p><strong>Location:</strong> ${incident.location}</p>
+                    <p><strong>Time:</strong> ${incident.time}</p>
+                    <p><strong>Details:</strong> ${incident.details}</p>
+                `;
+                ambulanceIncidentsDiv.appendChild(incidentDiv);
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>UK Emergency CAD System</h1>
+    </header>
+    <nav>
+        <button onclick="navigate('police')">Police Dashboard</button>
+        <button onclick="navigate('fire')">Fire Dashboard</button>
+        <button onclick="navigate('ambulance')">Ambulance Dashboard</button>
+        <button onclick="navigate('admin')">Admin Settings</button>
+    </nav>
+    <section id="content">
+        <h2>Welcome to the UK Emergency CAD System</h2>
+        <p>Select a dashboard to get started.</p>
+    </section>
+    <footer>
+        <p>&copy; 2024 UK Emergency CAD System</p>
+    </footer>
+</body>
+</html>
